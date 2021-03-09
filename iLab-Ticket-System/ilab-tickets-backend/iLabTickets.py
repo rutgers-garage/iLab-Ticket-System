@@ -104,42 +104,41 @@ def submit():
     return "done"
 
 #Return Open Tickets and Handle Closing Tickets
-@app.route('/open', methods=['GET', 'POST'])
+@app.route('/open', methods=['POST'])
 @tokenRequired
 def tickethandling():
     db = client["iLabTickets"]
-    if request.method == 'GET':
-        open = db["open"]
-        tickets = []
-        for document in open.find({}, projection = {"_id" : False}):
-            tickets.append(document)
+    open = db["open"]
+    tickets = []
+    for document in open.find({}, projection = {"_id" : False}):
+        tickets.append(document)
 
-        return jsonify(tickets)
+    return jsonify(tickets)
 
+@app.route('/close', methods=['POST'])
+@tokenRequired
+def close_ticket():
+    db = client["iLabTickets"]
+    finished = request.get_json()
+    openTickets = db["open"]
 
-    if request.method == 'POST':
-        finished = request.get_json()
-        openTickets = db["open"]
-
-        for document in openTickets.find({}, projection = {"_id" : False}):
-            if document["netid"] == finished["netid"]:
-                if document["subject"] == finished["subject"]:
-                    if document["message"] == finished["message"]:
-                        openTickets.remove(document)
-                        closed = db.assistant
-                        insert = {"iLab": finished["iLab"], "netid": document["netid"], "subject": document["subject"], "request": document["request"]}
-                        closed.insert_one(insert)
-                        openTickets.remove(document)
-                        return "removed"
-        return "done"
-
+    for document in openTickets.find({}, projection = {"_id" : False}):
+        if document["netid"] == finished["netid"]:
+            if document["subject"] == finished["subject"]:
+                if document["request"] == finished["request"]:
+                    closed = db["closed"]
+                    insert = {"iLab": finished["iLab"], "netid": document["netid"], "subject": document["subject"], "request": document["request"]}
+                    closed.insert_one(insert)
+                    openTickets.delete_one(document)
+                    return "removed"
+    return "done"
 
 #Return Closed Tickets
-@app.route('/closed', methods=['GET'])
+@app.route('/closed', methods=['POST'])
 @tokenRequired
 def closed():
     db = client["iLabTickets"]
-    closedTickets = db["assistant"]
+    closedTickets = db["closed"]
     tickets = []
     for document in closedTickets.find({}, projection={"_id": False}):
         tickets.append(document)
@@ -155,15 +154,17 @@ def login():
     for document in logininfo.find({}, projection = {"_id" : False}):
         if document["netid"] == attempt['netid']:
             if document["password"] == attempt['password']:
-                access_token = generateAccessToken(user)
-                refresh_token = generateRefreshToken(user)
+                access_token = generateAccessToken(document)
+                refresh_token = generateRefreshToken(document)
                 return json.dumps({"success": True,
                     "msg": "Login successful",
+                    "netid": attempt['netid'],
                     'access_token': access_token,
                     'refresh_token': refresh_token
                     })
             else:
                 return "incorrect"
+                
 
     return "incorrect"
 

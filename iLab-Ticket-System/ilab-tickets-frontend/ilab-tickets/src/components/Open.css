@@ -1,0 +1,12 @@
+.resolve{
+  float:right;
+  margin-left: 50px;
+}
+
+.entry{
+  width:75%;
+  height:50px;
+  display:flex;
+  align-items: center;
+  margin-bottom:10px;
+}

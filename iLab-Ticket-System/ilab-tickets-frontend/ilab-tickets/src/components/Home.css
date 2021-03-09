@@ -1,0 +1,36 @@
+.paths{
+    margin: auto;
+    width: 50%;
+    margin-top: 20%;
+
+}
+.buttons{
+    background: rgb(66, 184, 221);
+    border-radius: 4px;
+    padding: 20%;
+    margin:50px;
+    font-size: 30px;
+    font-family: 'Noto Sans JP', sans-serif;
+    text-decoration: none;
+    color: white;
+}
+
+.submission{
+    margin: auto;
+    width: 50%;
+    background-color: rgb(66, 184, 221);
+}
+
+.request{
+    resize: both;
+    min-height: 40px;
+}
+
+.inputVal{
+    margin:10px;
+}
+
+.submit{
+    width:50%;
+    margin:auto;
+}

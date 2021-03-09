@@ -1,0 +1,19 @@
+.ticket{
+  background-color: #87CEEB;
+  width: 75%;
+  height: 100%;
+  margin-left: 100px;
+  display:flex;
+  align-items: center;
+}
+li {
+  display: inline-block;
+  margin:10px;
+
+}
+.exit{
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  margin-left: 45%;
+}
